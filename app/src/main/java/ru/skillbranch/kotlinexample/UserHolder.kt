@@ -3,6 +3,7 @@ package ru.skillbranch.kotlinexample
 import androidx.annotation.VisibleForTesting
 import java.lang.IllegalArgumentException
 
+
 object UserHolder {
     private val map = mutableMapOf<String, User> ()
 

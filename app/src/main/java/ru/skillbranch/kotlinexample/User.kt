@@ -91,6 +91,7 @@ class User private constructor (
         """.trimIndent()
     }
 
+
     fun checkPassword(pass: String) = encrypt(pass) == passwordHash
 
     fun changePassword (oldPass: String, newPass: String){

@@ -12,6 +12,7 @@ import org.junit.Assert.*
  */
 class ExampleUnitTest {
     @Test
+
     fun refister_user() {
         val holder: UserHolder = UserHolder
         holder.registerUser ("John Doe", "John_Doe@unknown.com", "testPass")
