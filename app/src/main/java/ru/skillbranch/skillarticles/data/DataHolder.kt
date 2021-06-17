@@ -100,7 +100,7 @@ data class ArticleData(
     val category: String? = null,
     val categoryIcon: Any? = null,
     val date: Date,
-    val author: Any? = null,
+    val author: Any? = "Skill-Branch",
     val poster: String? = null,
     val content: List<Any> = emptyList()
 )
