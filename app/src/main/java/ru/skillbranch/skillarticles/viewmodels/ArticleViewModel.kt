@@ -136,7 +136,7 @@ data class ArticleState(
     val category: String? = null,
     val categoryIcon: Any? = null,
     val date: String? = null, // дата публикации
-    val author: Any? = null, //автор
+    val author: Any? = "Skill-Branch", //автор
     val poster: String? = null, //обложка
     val content: List<Any> = emptyList(),
     val reviews: List<Any> = emptyList()   //комментарии
