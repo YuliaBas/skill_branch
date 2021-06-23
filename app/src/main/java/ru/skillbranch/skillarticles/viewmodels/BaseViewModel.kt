@@ -9,7 +9,7 @@ abstract class BaseViewModel<T>(initState: T) : ViewModel() {
     val notifications = MutableLiveData<Event<Notify>>()
 
     /***
-     * Инициализация начального состояния аргументом конструктора, и объявления состояния как
+     * Инициализация начального состояния аргументом конструктоа, и объявления состояния как
      * MediatorLiveData - медиатор исспользуется для того чтобы учитывать изменяемые данные модели
      * и обновлять состояние ViewModel исходя из полученных данных
      */
@@ -22,11 +22,11 @@ abstract class BaseViewModel<T>(initState: T) : ViewModel() {
      * getter для получения not null значения текущего состояния ViewModel
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    protected val currentState
+    val currentState
         get() = state.value!!
 
 
-    /***
+     /***
      * лямбда выражение принимает в качестве аргумента текущее состояние и возвращает
      * модифицированное состояние, которое присваивается текущему состоянию
      */
@@ -41,9 +41,8 @@ abstract class BaseViewModel<T>(initState: T) : ViewModel() {
      * соответсвенно при изменении конфигурации и пересоздании Activity уведомление не будет вызвано
      * повторно
      */
-    @UiThread
     protected fun notify(content: Notify) {
-        notifications.value = Event(content)
+        notifications.postValue(Event(content))
     }
 
     /***
@@ -88,7 +87,7 @@ class ViewModelFactory(private val params: String) : ViewModelProvider.Factory {
     }
 }
 
-class Event <out E>(private val content: E) {
+class Event<out E>(private val content: E) {
     var hasBeenHandled = false
 
     /***
@@ -120,18 +119,19 @@ class EventObserver<E>(private val onEventUnhandledContent: (E) -> Unit) : Obser
     }
 }
 
-sealed class Notify(val message: String) {
-    data class TextMessage(val msg: String) : Notify(msg)
+sealed class Notify() {
+    abstract val message: String
+    data class TextMessage(override val message: String) : Notify()
 
     data class ActionMessage(
-        val msg: String,
+        override val message: String,
         val actionLabel: String,
         val actionHandler: (() -> Unit)
-    ) : Notify(msg)
+    ) : Notify()
 
     data class ErrorMessage(
-        val msg: String,
+        override val message: String,
         val errLabel: String?,
         val errHandler: (() -> Unit)?
-    ) : Notify(msg)
+    ) : Notify()
 }

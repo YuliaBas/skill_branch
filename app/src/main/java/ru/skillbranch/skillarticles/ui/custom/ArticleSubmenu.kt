@@ -13,7 +13,6 @@ import androidx.core.animation.doOnStart
 import com.google.android.material.shape.MaterialShapeDrawable
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.extensions.dpToPx
-import ru.skillbranch.skillarticles.ui.custom.behaviors.BottombarBehavior
 import ru.skillbranch.skillarticles.ui.custom.behaviors.SubmenuBehavior
 import kotlin.math.hypot
 
@@ -21,14 +20,13 @@ class ArticleSubmenu @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr), CoordinatorLayout.AttachedBehavior {
+) : ConstraintLayout(context, attrs, defStyleAttr) , CoordinatorLayout.AttachedBehavior {
+    override fun getBehavior(): CoordinatorLayout.Behavior<ArticleSubmenu> {
+        return SubmenuBehavior()
+    }
     var isOpen = false
     private var centerX: Float = context.dpToPx(200)
     private var centerY: Float = context.dpToPx(96)
-
-    override fun getBehavior(): CoordinatorLayout.Behavior<*> {
-        return SubmenuBehavior()
-    }
 
     init {
         View.inflate(context, R.layout.layout_submenu, this)
@@ -36,12 +34,7 @@ class ArticleSubmenu @JvmOverloads constructor(
         val materialBg = MaterialShapeDrawable.createWithElevationOverlay(context)
         materialBg.elevation = elevation
         background = materialBg
-        visibility = View.GONE
     }
-
-
-
-
 
     fun open() {
         if (isOpen || !isAttachedToWindow) return
