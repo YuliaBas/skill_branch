@@ -1,2 +1,2 @@
-# AndroidMiddleCourse
-Практический курс Middle Android Developer на Kotlin
+# Android на Kotlin
+Практический курс от skill-branch.ru 
