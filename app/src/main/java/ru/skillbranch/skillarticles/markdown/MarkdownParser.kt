@@ -241,6 +241,11 @@ sealed class Element(){
         override val elements: List<Element> = emptyList()
     ): Element()
 
+    data class BlockCode(
+        override val text: CharSequence,
+        override val elements: List<Element> = emptyList()
+    ) : Element()
+
     data class Link(
         val link:String,
         override val text: CharSequence,
