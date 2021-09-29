@@ -1,5 +1,6 @@
 package ru.skillbranch.skillarticles.markdown
 
+import java.lang.reflect.Type
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -17,11 +18,12 @@ object MarkdownParser {
     private const val INLINE_GROUP = "((?<!`)`[^`\\s].*?[^`\\s]?`(?!`))"
     private const val LINK_GROUP = "(\\[[^\\[\\]]*?]\\(.+?\\)|^\\[*?]\\(.*?\\))"
     private const val ORDERED_LIST_ITEM_GROUP = "(^[1-9]\\.\\s.+\$)"
+    private const val MULTILINE_CODE_GROUP = "((?<!`)`{3}[^`\\s](.|\\n|\\r\\n)*?[^`\\s]?`{3}(?!`))"
 
     //result regex
     private const val MARKDOWN_GROUPS="$UNORDERED_LIST_ITEM_GROUP|$HEADER_GROUP|$QUOTE_GROUP" +
             "|$ITALIC_GROUP|$BOLD_GROUP|$STRIKE_GROUP|$RULE_GROUP|$INLINE_GROUP|$LINK_GROUP" +
-            "|$ORDERED_LIST_ITEM_GROUP"
+            "|$ORDERED_LIST_ITEM_GROUP|$MULTILINE_CODE_GROUP"
 
     private val elementsPattern by lazy { Pattern.compile(MARKDOWN_GROUPS, Pattern.MULTILINE)}
 
@@ -56,7 +58,7 @@ object MarkdownParser {
             var text: CharSequence
 
             //groups range for iterate by groups
-            val groups = 1..10
+            val groups = 1..11
             var group = -1
             for (gr:Int in groups) {
                 if(matcher.group(gr) != null) {
@@ -177,6 +179,40 @@ object MarkdownParser {
                     lastStartIndex = endIndex
                 }
 
+                11 -> {
+                    // line by line
+                    val fullText = string.subSequence(startIndex.plus(3), endIndex.plus(-3)).toString()
+
+                    if (fullText.contains(LINE_SEPARATOR)) {
+                        for ((index, line) in fullText.lines().withIndex()) {
+                            when (index) {
+                                fullText.lines().lastIndex -> parents.add(
+                                    Element.BlockCode(
+                                        Element.BlockCode.Type.END,
+                                        line
+                                    )
+                                )
+                                0 -> parents.add(
+                                    Element.BlockCode(
+                                        Element.BlockCode.Type.START,
+                                        line + LINE_SEPARATOR
+                                    )
+                                )
+                                else -> parents.add(
+                                    Element.BlockCode(
+                                        Element.BlockCode.Type.MIDDLE,
+                                        line + LINE_SEPARATOR
+                                    )
+                                )
+                            }
+                        }
+                    } else parents.add(Element.BlockCode(Element.BlockCode.Type.SINGLE, fullText))
+
+                    lastStartIndex = endIndex
+                }
+
+
+
             }
         }
 
@@ -242,9 +278,12 @@ sealed class Element(){
     ): Element()
 
     data class BlockCode(
+        val type: Type = Type.MIDDLE,
         override val text: CharSequence,
         override val elements: List<Element> = emptyList()
-    ) : Element()
+    ): Element() {
+        enum class Type { START, END, MIDDLE, SINGLE }
+    }
 
     data class Link(
         val link:String,
