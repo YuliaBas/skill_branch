@@ -278,7 +278,7 @@ sealed class Element(){
     ): Element()
 
     data class BlockCode(
-        val type: Type = Type.MIDDLE,
+        val type: Type = Type.START,
         override val text: CharSequence,
         override val elements: List<Element> = emptyList()
     ): Element() {
