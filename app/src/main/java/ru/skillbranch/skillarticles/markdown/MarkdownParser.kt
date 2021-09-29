@@ -180,33 +180,11 @@ object MarkdownParser {
                 }
 
                 11 -> {
-                    // line by line
-                    val fullText = string.subSequence(startIndex.plus(3), endIndex.plus(-3)).toString()
-
-                    if (fullText.contains(LINE_SEPARATOR)) {
-                        for ((index, line) in fullText.lines().withIndex()) {
-                            when (index) {
-                                fullText.lines().lastIndex -> parents.add(
-                                    Element.BlockCode(
-                                        Element.BlockCode.Type.END,
-                                        line
-                                    )
-                                )
-                                0 -> parents.add(
-                                    Element.BlockCode(
-                                        Element.BlockCode.Type.START,
-                                        line + LINE_SEPARATOR
-                                    )
-                                )
-                                else -> parents.add(
-                                    Element.BlockCode(
-                                        Element.BlockCode.Type.MIDDLE,
-                                        line + LINE_SEPARATOR
-                                    )
-                                )
-                            }
-                        }
-                    } else parents.add(Element.BlockCode(Element.BlockCode.Type.SINGLE, fullText))
+                    //text without "```{}```"
+                    text = string.subSequence(startIndex.plus(3), endIndex.plus(-3))
+                    val element = Element.BlockCode(text = text)
+                    parents.add(element)
+                    lastStartIndex = endIndex
 
                     lastStartIndex = endIndex
                 }
